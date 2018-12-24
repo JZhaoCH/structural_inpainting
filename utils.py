@@ -8,6 +8,9 @@ reference:
 https://github.com/YJango/TFRecord-Dataset-Estimator-API/blob/master/TensorFlow%20Dataset%20%2B%20TFRecords.ipynb
 https://stackoverflow.com/questions/44549245/how-to-use-tensorflow-tf-train-string-input-producer-to-produce-several-epochs-d/44551409#44551409
 """
+img_height = 128
+img_width = 128
+img_channel = 3
 
 
 def image_dataset_iterator(tfrecord_dir, batch_size):
@@ -24,7 +27,7 @@ def parse_function(example_proto):
             'image_shape': tf.FixedLenFeature(shape=(3,), dtype=tf.int64)}
     parsed_example = tf.parse_single_example(example_proto, dics)
     parsed_example['image'] = tf.decode_raw(parsed_example['image'], tf.uint8)
-    parsed_example['image'] = tf.reshape(parsed_example['image'], (128, 128, 3))
+    parsed_example['image'] = tf.reshape(parsed_example['image'], (img_height, img_width, img_channel))
     parsed_example['image'] = tf.cast(parsed_example['image'], tf.float32)/256.0
     return parsed_example
 

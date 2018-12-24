@@ -30,14 +30,12 @@ class Vgg16Feature:
         gt_conv1_1, gt_conv2_1, gt_conv3_1 = self._get_feature(ground_true)
         inp_conv1_1, inp_conv2_1, inp_conv3_1 = self._get_feature(inpainting)
 
-        loss = self._frobenius_norm(gt_conv1_1, inp_conv1_1) + self._frobenius_norm(gt_conv2_1, inp_conv2_1) +\
-               self._frobenius_norm(gt_conv3_1, inp_conv3_1)
+        loss = self._square_frobenius_norm(gt_conv1_1, inp_conv1_1) + self._square_frobenius_norm(gt_conv2_1, inp_conv2_1) +\
+                self._square_frobenius_norm(gt_conv3_1, inp_conv3_1)
         return loss
 
-    def _frobenius_norm(self, x, y):
-        loss = tf.square(x-y)
-        loss = tf.sqrt(1e-5 + tf.reduce_sum(loss, axis=[1, 2, 3]))
-        loss = tf.reduce_mean(loss)
+    def _square_frobenius_norm(self, x, y):
+        loss = tf.reduce_mean(tf.square(x-y), axis=[0, 1, 2, 3])
         return loss
 
     def _get_feature(self, x):
@@ -60,4 +58,4 @@ class Vgg16Feature:
 
         conv3_1 = self._conv_layer(pool2, "conv3_1")
 
-        return conv1_1, conv2_1, conv3_1
+        return conv1_1/255.0, conv2_1/255.0, conv3_1/255.0
